@@ -3,109 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA | Мотивация</title>
+    <title>Aura | Motivation Platform</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .aura-container {
-            padding: 20px;
-            border: 1px solid #333;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
-            max-width: 600px;
-        }
-        h1 {
-            font-size: 3rem;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #fff, #555);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        p {
-            font-size: 1.2rem;
-            font-style: italic;
-            color: #ccc;
-            margin-top: 20px;
-            min-height: 60px;
-        }
-        .btn {
-            margin-top: 30px;
-            padding: 10px 25px;
-            background: white;
-            color: black;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
+        body { margin: 0; padding: 0; background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; }
+        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; padding-bottom: 80px; }
+        
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 0.5px solid #333; z-index: 100; }
+        header h1 { font-size: 24px; font-weight: 800; background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+        
+        #loginBtn { background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        #userInfo { font-size: 14px; font-weight: bold; color: #3498db; }
+
+        /* Upload Section */
+        #uploadSection { padding: 20px; border-bottom: 0.5px solid #333; display: none; }
+        textarea { width: 100%; background: none; border: none; color: #fff; font-size: 18px; resize: none; outline: none; margin-bottom: 10px; }
+        .upload-actions { display: flex; justify-content: space-between; align-items: center; }
+        .file-label { cursor: pointer; color: #3498db; font-size: 22px; }
+        #shareBtn { background: #3498db; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        #shareBtn:disabled { background: #555; cursor: not-allowed; }
+
+        /* Feed & Post Cards */
+        .post-card { border-bottom: 0.5px solid #333; padding: 15px 0; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .post-header { display: flex; align-items: center; padding: 0 15px 10px; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid #444; }
+        .post-text { padding: 0 15px; font-size: 16px; line-height: 1.4; margin-bottom: 10px; white-space: pre-wrap; }
+        .post-media img, .post-media video, .post-media audio { width: 100%; max-height: 500px; object-fit: cover; }
+        
+        /* Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: 60px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 0.5px solid #333; }
+        .nav-item { font-size: 24px; cursor: pointer; }
+        #previewContainer img, #previewContainer video { width: 100px; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="aura-container">
-        <h1>AURA</h1>
-        <p id="quote">"Сенің мүмкіндігің шексіз, тек алға ұмтыл."</p>
-        <button class="btn" onclick="nextQuote()">Келесі мотивация</button>
+
+<div class="app-container">
+    <header>
+        <h1>Aura</h1>
+        <button id="loginBtn">Кіру</button>
+        <div id="userInfo" style="display:none;"></div>
+    </header>
+
+    <div id="uploadSection">
+        <textarea id="postText" placeholder="Бүгінгі мотивацияңмен бөліс..."></textarea>
+        <div id="previewContainer"></div>
+        <div class="upload-actions">
+            <label for="fileInput" class="file-label">🖼️ / 🎥 / 🎵</label>
+            <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
+            <button id="shareBtn">Жариялау</button>
+        </div>
     </div>
 
-    <script>
-        // Мотивация сөздерінің мысалы (3k сөзді шығару үшін JSON немесе бөлек файлға салуға болады)
-        const quotes = [
-            "Өзгерісті өзіңнен баста.",
-            "Қиындық — бұл тәжірибе.",
-            "Бүгінгі еңбек — ертеңгі жеңіс.",
-            "Ешқашан берілме, себебі сен мықтысың.",
-            "Уақыт — ең қымбат ресурс.",
-            "Әр қадам маңызды.",
-            "Кішкентай жеңістерді тойла.",
-            "Тәуекелсіз табыс жоқ.",
-            "Алға бас!",
-            "Сенің арманың – сенің мақсат."
-            // ... осы қатарға 3k сөз қосуға болады
-        ];
+    <div id="feed">
+        <div style="text-align:center; padding:50px; color:#555;">Жүктелуде...</div>
+    </div>
 
-        let index = 0;
-        const quoteElement = document.getElementById('quote');
+    <nav class="bottom-nav">
+        <div class="nav-item">🏠</div>
+        <div class="nav-item">🔍</div>
+        <div class="nav-item" onclick="document.getElementById('postText').focus()">➕</div>
+        <div class="nav-item">👤</div>
+    </nav>
+</div>
 
-        function nextQuote() {
-            index = (index + 1) % quotes.length;
-            quoteElement.innerText = '"' + quotes[index] + '"';
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // --- 1. Firebase Конфигурациясы (ӨЗ ДЕРЕКТЕРІҢДІ ҚОЙ) ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBagrHgtTIObFHCK-XQ-Fs_T-fbwN6Xed8",
+        authDomain: "aura-62244.firebaseapp.com",
+        projectId: "aura-62244",
+        storageBucket: "aura-62244.firebasestorage.app",
+        messagingSenderId: "617932120986",
+        appId: "1:617932120986:web:f26dc847282eebdbd1d023"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // Cloudinary деректері
+    const CLOUD_NAME = "din5wpn5g";
+    const UPLOAD_PRESET = "aura_preset";
+
+    // DOM элементтері
+    const loginBtn = document.getElementById("loginBtn"),
+          userInfo = document.getElementById("userInfo"),
+          uploadSection = document.getElementById("uploadSection"),
+          postText = document.getElementById("postText"),
+          fileInput = document.getElementById("fileInput"),
+          shareBtn = document.getElementById("shareBtn"),
+          previewContainer = document.getElementById("previewContainer"),
+          feed = document.getElementById("feed");
+
+    let currentUser = null;
+
+    // --- 2. Аутентификация ---
+    loginBtn.onclick = () => signInWithPopup(auth, provider);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            loginBtn.style.display = "none";
+            userInfo.style.display = "block";
+            userInfo.textContent = `Сәлем, ${user.displayName.split(' ')[0]}`;
+            uploadSection.style.display = "block";
+            loadFeed();
         }
+    });
 
-        // Авто өту: әр 10 секунд сайын келесі мотивация
-        setInterval(nextQuote, 10000);
+    // Файлды алдын ала көру
+    fileInput.onchange = (e) => {
+        previewContainer.innerHTML = "";
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (file.type.startsWith("image")) previewContainer.innerHTML = `<img src="${url}">`;
+        else if (file.type.startsWith("video")) previewContainer.innerHTML = `<video src="${url}" muted></video>`;
+    };
 
-        // Фондық ойнату үшін қарапайым TTS API (браузердегі SpeechSynthesis)
-        function speakQuote(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'kk-KZ'; // қазақша
-                utterance.rate = 1; // жылдамдық
-                speechSynthesis.speak(utterance);
+    // --- 3. Постты Cloudinary + Firebase арқылы жүктеу ---
+    shareBtn.onclick = async () => {
+        if (!postText.value.trim() && !fileInput.files[0]) return alert("Мәтін немесе файл таңдаңыз!");
+        
+        shareBtn.disabled = true;
+        shareBtn.innerText = "Жүктелуде...";
+        let mediaUrl = "";
+        let mediaType = "text";
+
+        try {
+            // Cloudinary-ге жүктеу
+            if (fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", UPLOAD_PRESET);
+
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+                mediaUrl = data.secure_url;
+                mediaType = file.type.split('/')[0];
             }
-        }
 
-        // Келесі мотивацияда оқыту
-        function nextQuoteSpeak() {
-            nextQuote();
-            speakQuote(quotes[index]);
-        }
+            // Firestore-ға сақтау
+            await addDoc(collection(db, "posts"), {
+                authorId: currentUser.uid,
+                authorName: currentUser.displayName,
+                authorPhoto: currentUser.photoURL,
+                text: postText.value,
+                mediaUrl: mediaUrl,
+                type: mediaType,
+                timestamp: serverTimestamp()
+            });
 
-        // Фондық батырманы автоматты түрде қосу
-        setInterval(nextQuoteSpeak, 12000); // әр 12 секунд сайын оқиды
-    </script>
+            postText.value = "";
+            fileInput.value = "";
+            previewContainer.innerHTML = "";
+            alert("Пост жарияланды!");
+        } catch (e) {
+            console.error(e);
+            alert("Қате шықты!");
+        } finally {
+            shareBtn.disabled = false;
+            shareBtn.innerText = "Жариялау";
+        }
+    };
+
+    // --- 4. Лентаны нақты уақытта жүктеу (Real-time) ---
+    function loadFeed() {
+        const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            feed.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const card = document.createElement("div");
+                card.className = "post-card";
+                
+                let mediaTag = "";
+                if (data.mediaUrl) {
+                    if (data.type === "image") mediaTag = `<div class="post-media"><img src="${data.mediaUrl}"></div>`;
+                    else if (data.type === "video") mediaTag = `<div class="post-media"><video src="${data.mediaUrl}" controls></video></div>`;
+                    else if (data.type === "audio") mediaTag = `<div class="post-media"><audio src="${data.mediaUrl}" controls></audio></div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="post-header">
+                        <img class="user-avatar" src="${data.authorPhoto}">
+                        <strong>${data.authorName}</strong>
+                    </div>
+                    <div class="post-text">${data.text}</div>
+                    ${mediaTag}
+                `;
+                feed.appendChild(card);
+            });
+        });
+    }
+</script>
 </body>
 </html>
+
