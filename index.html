@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Мотивация</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .aura-container {
+            padding: 20px;
+            border: 1px solid #333;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 3rem;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, #555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #ccc;
+            margin-top: 20px;
+            min-height: 60px;
+        }
+        .btn {
+            margin-top: 30px;
+            padding: 10px 25px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="aura-container">
+        <h1>AURA</h1>
+        <p id="quote">"Сенің мүмкіндігің шексіз, тек алға ұмтыл."</p>
+        <button class="btn" onclick="nextQuote()">Келесі мотивация</button>
+    </div>
+
+    <script>
+        // Мотивация сөздерінің мысалы (3k сөзді шығару үшін JSON немесе бөлек файлға салуға болады)
+        const quotes = [
+            "Өзгерісті өзіңнен баста.",
+            "Қиындық — бұл тәжірибе.",
+            "Бүгінгі еңбек — ертеңгі жеңіс.",
+            "Ешқашан берілме, себебі сен мықтысың.",
+            "Уақыт — ең қымбат ресурс.",
+            "Әр қадам маңызды.",
+            "Кішкентай жеңістерді тойла.",
+            "Тәуекелсіз табыс жоқ.",
+            "Алға бас!",
+            "Сенің арманың – сенің мақсат."
+            // ... осы қатарға 3k сөз қосуға болады
+        ];
+
+        let index = 0;
+        const quoteElement = document.getElementById('quote');
+
+        function nextQuote() {
+            index = (index + 1) % quotes.length;
+            quoteElement.innerText = '"' + quotes[index] + '"';
+        }
+
+        // Авто өту: әр 10 секунд сайын келесі мотивация
+        setInterval(nextQuote, 10000);
+
+        // Фондық ойнату үшін қарапайым TTS API (браузердегі SpeechSynthesis)
+        function speakQuote(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'kk-KZ'; // қазақша
+                utterance.rate = 1; // жылдамдық
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Келесі мотивацияда оқыту
+        function nextQuoteSpeak() {
+            nextQuote();
+            speakQuote(quotes[index]);
+        }
+
+        // Фондық батырманы автоматты түрде қосу
+        setInterval(nextQuoteSpeak, 12000); // әр 12 секунд сайын оқиды
+    </script>
+</body>
+</html>
