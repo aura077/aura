@@ -3,211 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura | Motivation Platform</title>
+    <title>Aura | 077</title>
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; }
-        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; padding-bottom: 80px; }
-        
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 0.5px solid #333; z-index: 100; }
-        header h1 { font-size: 24px; font-weight: 800; background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-        
-        #loginBtn { background: #fff; color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        #userInfo { font-size: 14px; font-weight: bold; color: #3498db; }
-
-        /* Upload Section */
-        #uploadSection { padding: 20px; border-bottom: 0.5px solid #333; display: none; }
-        textarea { width: 100%; background: none; border: none; color: #fff; font-size: 18px; resize: none; outline: none; margin-bottom: 10px; }
-        .upload-actions { display: flex; justify-content: space-between; align-items: center; }
-        .file-label { cursor: pointer; color: #3498db; font-size: 22px; }
-        #shareBtn { background: #3498db; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        #shareBtn:disabled { background: #555; cursor: not-allowed; }
-
-        /* Feed & Post Cards */
-        .post-card { border-bottom: 0.5px solid #333; padding: 15px 0; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .post-header { display: flex; align-items: center; padding: 0 15px 10px; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid #444; }
-        .post-text { padding: 0 15px; font-size: 16px; line-height: 1.4; margin-bottom: 10px; white-space: pre-wrap; }
-        .post-media img, .post-media video, .post-media audio { width: 100%; max-height: 500px; object-fit: cover; }
-        
-        /* Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: 60px; background: #000; display: flex; justify-content: space-around; align-items: center; border-top: 0.5px solid #333; }
-        .nav-item { font-size: 24px; cursor: pointer; }
-        #previewContainer img, #previewContainer video { width: 100px; border-radius: 10px; margin-top: 10px; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        h1 { background: linear-gradient(45deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        button { background: #3498db; color: #fff; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; }
+        #uploadSection { margin-top: 20px; display: none; }
+        textarea { width: 100%; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; padding: 10px; height: 80px; }
+        .post { border-bottom: 1px solid #222; padding: 15px 0; }
+        .post img, .post video { width: 100%; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Aura</h1>
+            <button id="loginBtn">Кіру</button>
+            <div id="userInfo"></div>
+        </header>
 
-<div class="app-container">
-    <header>
-        <h1>Aura</h1>
-        <button id="loginBtn">Кіру</button>
-        <div id="userInfo" style="display:none;"></div>
-    </header>
-
-    <div id="uploadSection">
-        <textarea id="postText" placeholder="Бүгінгі мотивацияңмен бөліс..."></textarea>
-        <div id="previewContainer"></div>
-        <div class="upload-actions">
-            <label for="fileInput" class="file-label">🖼️ / 🎥 / 🎵</label>
-            <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none;">
-            <button id="shareBtn">Жариялау</button>
+        <div id="uploadSection">
+            <textarea id="postText" placeholder="Не жаңалық?"></textarea>
+            <input type="file" id="fileInput" accept="image/*,video/*">
+            <button id="shareBtn">Бөлісу</button>
         </div>
+
+        <div id="feed"></div>
     </div>
 
-    <div id="feed">
-        <div style="text-align:center; padding:50px; color:#555;">Жүктелуде...</div>
-    </div>
+    <script type="module">
+        import { db, auth, provider } from './firebase-config.js';
+        import { signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <nav class="bottom-nav">
-        <div class="nav-item">🏠</div>
-        <div class="nav-item">🔍</div>
-        <div class="nav-item" onclick="document.getElementById('postText').focus()">➕</div>
-        <div class="nav-item">👤</div>
-    </nav>
-</div>
+        const CLOUD_NAME = "din5wpn5g";
+        const UPLOAD_PRESET = "aura_preset";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        const loginBtn = document.getElementById('loginBtn');
+        const uploadSection = document.getElementById('uploadSection');
+        const feed = document.getElementById('feed');
 
-    // --- 1. Firebase Конфигурациясы (ӨЗ ДЕРЕКТЕРІҢДІ ҚОЙ) ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyBagrHgtTIObFHCK-XQ-Fs_T-fbwN6Xed8",
-        authDomain: "aura-62244.firebaseapp.com",
-        projectId: "aura-62244",
-        storageBucket: "aura-62244.firebasestorage.app",
-        messagingSenderId: "617932120986",
-        appId: "1:617932120986:web:f26dc847282eebdbd1d023"
-    };
+        loginBtn.onclick = () => signInWithPopup(auth, provider);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginBtn.style.display = "none";
+                uploadSection.style.display = "block";
+                document.getElementById('userInfo').innerText = user.displayName;
+                loadPosts();
+            }
+        });
 
-    // Cloudinary деректері
-    const CLOUD_NAME = "din5wpn5g";
-    const UPLOAD_PRESET = "aura_preset";
+        document.getElementById('shareBtn').onclick = async () => {
+            const text = document.getElementById('postText').value;
+            const file = document.getElementById('fileInput').files[0];
+            let mediaUrl = "";
 
-    // DOM элементтері
-    const loginBtn = document.getElementById("loginBtn"),
-          userInfo = document.getElementById("userInfo"),
-          uploadSection = document.getElementById("uploadSection"),
-          postText = document.getElementById("postText"),
-          fileInput = document.getElementById("fileInput"),
-          shareBtn = document.getElementById("shareBtn"),
-          previewContainer = document.getElementById("previewContainer"),
-          feed = document.getElementById("feed");
-
-    let currentUser = null;
-
-    // --- 2. Аутентификация ---
-    loginBtn.onclick = () => signInWithPopup(auth, provider);
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            loginBtn.style.display = "none";
-            userInfo.style.display = "block";
-            userInfo.textContent = `Сәлем, ${user.displayName.split(' ')[0]}`;
-            uploadSection.style.display = "block";
-            loadFeed();
-        }
-    });
-
-    // Файлды алдын ала көру
-    fileInput.onchange = (e) => {
-        previewContainer.innerHTML = "";
-        const file = e.target.files[0];
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        if (file.type.startsWith("image")) previewContainer.innerHTML = `<img src="${url}">`;
-        else if (file.type.startsWith("video")) previewContainer.innerHTML = `<video src="${url}" muted></video>`;
-    };
-
-    // --- 3. Постты Cloudinary + Firebase арқылы жүктеу ---
-    shareBtn.onclick = async () => {
-        if (!postText.value.trim() && !fileInput.files[0]) return alert("Мәтін немесе файл таңдаңыз!");
-        
-        shareBtn.disabled = true;
-        shareBtn.innerText = "Жүктелуде...";
-        let mediaUrl = "";
-        let mediaType = "text";
-
-        try {
-            // Cloudinary-ге жүктеу
-            if (fileInput.files[0]) {
-                const file = fileInput.files[0];
+            if (file) {
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("upload_preset", UPLOAD_PRESET);
-
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
-                    method: "POST",
-                    body: formData
-                });
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: "POST", body: formData });
                 const data = await res.json();
                 mediaUrl = data.secure_url;
-                mediaType = file.type.split('/')[0];
             }
 
-            // Firestore-ға сақтау
             await addDoc(collection(db, "posts"), {
-                authorId: currentUser.uid,
-                authorName: currentUser.displayName,
-                authorPhoto: currentUser.photoURL,
-                text: postText.value,
-                mediaUrl: mediaUrl,
-                type: mediaType,
-                timestamp: serverTimestamp()
+                text, mediaUrl, authorName: auth.currentUser.displayName,
+                authorPhoto: auth.currentUser.photoURL, timestamp: serverTimestamp()
             });
+            alert("Дайын!");
+        };
 
-            postText.value = "";
-            fileInput.value = "";
-            previewContainer.innerHTML = "";
-            alert("Пост жарияланды!");
-        } catch (e) {
-            console.error(e);
-            alert("Қате шықты!");
-        } finally {
-            shareBtn.disabled = false;
-            shareBtn.innerText = "Жариялау";
+        function loadPosts() {
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snaps) => {
+                feed.innerHTML = "";
+                snaps.forEach(doc => {
+                    const p = doc.data();
+                    const el = document.createElement('div');
+                    el.className = 'post';
+                    el.innerHTML = `<b>${p.authorName}</b><p>${p.text}</p>${p.mediaUrl ? `<img src="${p.mediaUrl}">` : ''}`;
+                    feed.appendChild(el);
+                });
+            });
         }
-    };
-
-    // --- 4. Лентаны нақты уақытта жүктеу (Real-time) ---
-    function loadFeed() {
-        const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            feed.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const card = document.createElement("div");
-                card.className = "post-card";
-                
-                let mediaTag = "";
-                if (data.mediaUrl) {
-                    if (data.type === "image") mediaTag = `<div class="post-media"><img src="${data.mediaUrl}"></div>`;
-                    else if (data.type === "video") mediaTag = `<div class="post-media"><video src="${data.mediaUrl}" controls></video></div>`;
-                    else if (data.type === "audio") mediaTag = `<div class="post-media"><audio src="${data.mediaUrl}" controls></audio></div>`;
-                }
-
-                card.innerHTML = `
-                    <div class="post-header">
-                        <img class="user-avatar" src="${data.authorPhoto}">
-                        <strong>${data.authorName}</strong>
-                    </div>
-                    <div class="post-text">${data.text}</div>
-                    ${mediaTag}
-                `;
-                feed.appendChild(card);
-            });
-        });
-    }
-</script>
+    </script>
 </body>
 </html>
 
