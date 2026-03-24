@@ -3,47 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Aura Premium</title>
+<title>Aura Evolution</title>
 <style>
-:root { --p: #f5576c; --s: #3498db; --bg: #050505; --txt: #fff; --card: rgba(255,255,255,0.06); }
-body.light { --bg: #f0f2f5; --txt: #000; --card: #fff; }
-body { margin:0; padding:0; background: var(--bg); color: var(--txt); font-family: -apple-system, system-ui, sans-serif; transition: 0.3s; -webkit-tap-highlight-color: transparent; }
-.app { max-width:500px; margin:0 auto; min-height:100vh; padding-bottom:90px; }
-header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; position:sticky; top:0; background:rgba(var(--bg),0.8); backdrop-filter:blur(20px); z-index:1000; border-bottom:0.1px solid rgba(255,255,255,0.1); }
-h1 { font-size:24px; font-weight:900; background:linear-gradient(45deg, #f093fb, #f5576c); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; }
-.welcome-screen { position:fixed; inset:0; background:#000; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; }
-.g-btn { background:#fff; color:#000; border:none; padding:12px 24px; border-radius:30px; font-weight:700; display:flex; align-items:center; gap:10px; cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,0.3); transition:0.2s; }
-.g-btn:active { transform:scale(0.95); }
-.g-btn img { width:20px; }
-#upload { background:var(--card); margin:15px; border-radius:25px; padding:20px; border:1px solid rgba(255,255,255,0.1); display:none; }
-.cat-sel { width:100%; background:rgba(0,0,0,0.2); color:var(--txt); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px; margin-bottom:15px; outline:none; font-weight:600; }
-textarea { width:100%; background:none; border:none; color:var(--txt); font-size:18px; outline:none; min-height:80px; resize:none; }
-.actions { display:flex; justify-content:space-between; align-items:center; margin-top:15px; }
-.file-btn { font-size:24px; cursor:pointer; }
-#shareBtn { background:var(--s); color:#fff; border:none; padding:10px 25px; border-radius:20px; font-weight:800; }
-.post { background:var(--card); margin:15px; border-radius:25px; padding:18px; border:0.1px solid rgba(255,255,255,0.08); animation:slideUp 0.4s; }
-@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-.p-user { display:flex; align-items:center; gap:12px; margin-bottom:15px; }
-.avatar { width:42px; height:42px; border-radius:50%; border:2px solid var(--p); object-fit:cover; }
-.p-cat { background:var(--p); font-size:10px; padding:3px 10px; border-radius:10px; font-weight:800; }
-.p-media img, .p-media video { width:100%; border-radius:20px; margin-top:15px; }
-.nav { position:fixed; bottom:0; width:100%; max-width:500px; height:75px; background:rgba(var(--bg),0.85); backdrop-filter:blur(25px); display:flex; justify-content:space-around; align-items:center; border-top:0.1px solid rgba(255,255,255,0.1); }
-.nav-i { font-size:24px; cursor:pointer; transition:0.2s; opacity:0.5; }
-.nav-i:active { transform:scale(0.8); opacity:1; }
-#preview img, #preview video { width:80px; height:80px; border-radius:15px; object-fit:cover; border:2px solid var(--s); }
-.settings-panel { position:fixed; bottom:-100%; left:0; width:100%; background:var(--bg); border-radius:30px 30px 0 0; padding:30px 20px; transition:0.4s; z-index:3000; border-top:1px solid var(--p); }
-.settings-panel.open { bottom:0; }
-.set-row { display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+/* CSS: Заманауи айнымалылар мен қорғаныс */
+:root {
+  --p: #ff3b30; /* iOS Red */
+  --s: #007aff; /* iOS Blue */
+  --bg: #000;
+  --txt: #fff;
+  --card: rgba(28,28,30,0.8);
+  --border: rgba(255,255,255,0.08);
+}
+
+body.light {
+  --bg: #f9f9f9;
+  --txt: #000;
+  --card: rgba(255,255,255,0.85);
+  --border: rgba(0,0,0,0.06);
+}
+
+/* ҚАТЕЛІККЕ ҚАРСЫ ШЕШІМ: */
+/* Браузердің немесе телефонның автоматты іздеу/жарнама блоктарын (Скриншоттағыдай) алып тастау */
+google-overlay-bottom, iframe[name^='google_ads_iframe'], .adsbygoogle {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+
+body {
+  margin:0;
+  background: var(--bg);
+  color: var(--txt);
+  font-family: -apple-system, system-ui, sans-serif;
+  overflow-x:hidden;
+  transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.app {
+  max-width:500px;
+  margin:0 auto;
+  min-height:100vh;
+  padding-bottom:120px;
+}
+
+/* Стикер емес, Кәсіби SVG иконалары мен градиентті хедер */
+header {
+  position:sticky;
+  top:0;
+  background:rgba(var(--bg),0.8);
+  backdrop-filter: blur(25px);
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:1000;
+  border-bottom:0.5px solid var(--border);
+}
+
+h1 {
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#ff3b30,#ff9500);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin:0;
+}
+
+.welcome {
+  position:fixed;
+  inset:0;
+  background:#000;
+  z-index:2000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+}
+
+/* Заманауи Google батырмасы (эмодзисіз) */
+.g-btn {
+  background:#fff;
+  color:#000;
+  border:none;
+  padding:15px 30px;
+  border-radius:50px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  box-shadow:0 15px 40px rgba(255,255,255,0.1);
+  transition: 0.3s;
+}
+
+.g-btn:active {
+  transform: scale(0.92) rotate(-1deg);
+}
+
+#upload {
+  background: var(--card);
+  margin:15px;
+  border-radius:30px;
+  padding:20px;
+  border:1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+textarea {
+  width:100%;
+  background:none;
+  border:none;
+  color:var(--txt);
+  font-size:19px;
+  outline:none;
+  min-height:90px;
+  resize:none;
+  line-height:1.4;
+}
+
+.post {
+  background: var(--card);
+  margin:15px;
+  border-radius:30px;
+  padding:18px;
+  border:0.1px solid var(--border);
+  animation: fadeIn 0.5s;
+}
+
+.avatar {
+  width:44px;
+  height:44px;
+  border-radius:15px;
+  object-fit:cover;
+  border: 1.5px solid var(--border);
+}
+
+.p-media img, .p-media video {
+  width:100%;
+  border-radius:20px;
+  margin-top:15px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.6);
+}
+
+/* ЗАМАНАУИ НАВИГАЦИЯ: СТИКЕР ЕМЕС, SVG ИКОНАЛАР */
+.nav {
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  width:85%;
+  max-width:380px;
+  height:70px;
+  background:rgba(20,20,20,0.6);
+  backdrop-filter: blur(25px);
+  border-radius:35px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 30px 60px rgba(0,0,0,0.6);
+}
+
+.nav-i {
+  fill: rgba(255,255,255,0.5);
+  cursor:pointer;
+  transition: 0.3s;
+}
+
+.nav-i:active {
+  transform: scale(0.7);
+}
+
+.nav-i.active {
+  fill: var(--p);
+  filter: drop-shadow(0 0 10px var(--p));
+}
+
+.sh-btn {
+  background:var(--s);
+  color:#fff;
+  border:none;
+  padding:12px 28px;
+  border-radius:20px;
+  font-weight:700;
+  transition: 0.2s;
+}
+.sh-btn:disabled { opacity:0.5; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body class="dark">
 
-<div id="welcome" class="welcome-screen">
-    <h1 style="font-size:40px; margin-bottom:10px;">Aura</h1>
-    <p id="t-welcome" style="opacity:0.7; margin-bottom:40px;">Мотивацияға толы сайтқа қош келдіңіз!</p>
-    <p style="font-size:12px; margin-bottom:15px; opacity:0.5;" id="t-login-hint">Ең алдымен жүйеге кіру</p>
+<div id="welcome" class="welcome">
+    <h1>Aura</h1>
+    <p style="opacity:0.6; margin-top:10px;">The Digital Consciousness</p>
+    <div style="height:60px;"></div>
     <button class="g-btn" id="loginBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="22">
         Google-мен кіру
     </button>
 </div>
@@ -51,66 +213,45 @@ textarea { width:100%; background:none; border:none; color:var(--txt); font-size
 <div class="app">
     <header>
         <h1>Aura</h1>
-        <div id="userHead" style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggleSettings()">
-            <span id="uName" style="font-weight:800; font-size:14px; color:var(--s);"></span>
-            <img id="uPic" class="avatar" style="width:30px; height:30px; border:none;">
+        <div id="uHead" style="display:none; align-items:center; gap:10px; cursor:pointer;" onclick="toggleSettings()">
+            <img id="uPic" class="avatar" style="width:34px; height:34px;">
         </div>
     </header>
 
     <div id="upload">
-        <select id="category" class="cat-sel">
-            <option value="" disabled selected id="t-cat-hold">Категория таңдаңыз *</option>
-            <option value="Мотивация">🚀 Мотивация</option>
-            <option value="Даму">🧠 Даму</option>
-            <option value="Спорт">🏃 Спорт</option>
-            <option value="Пайдалы">💡 Пайдалы кеңес</option>
+        <select id="cat" class="cat-sel" style="width:100%; border:none; background:rgba(255,255,255,0.05); color:#fff; padding:12px; border-radius:12px; margin-bottom:15px; outline:none; font-weight:700; ">
+            <option value="" disabled selected>Категория</option>
+            <option value="💡 Мотивация">💡 Мотивация</option>
+            <option value="💻 Технология">💻 Технология</option>
+            <option value="🦾 Спорт">🦾 Спорт</option>
+            <option value="👨‍💻 Даму">👨‍💻 Даму</option>
         </select>
-        <textarea id="postText" placeholder="Бүгінгі ойың..."></textarea>
-        <div id="preview"></div>
-        <div class="actions">
-            <label for="fileInput" class="file-btn">🖼️</label>
-            <input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
-            <button id="shareBtn">Жариялау</button>
+        <textarea id="text" placeholder="Бүгінгі ойың..."></textarea>
+        <div id="prev"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <label for="fIn" style="font-size:32px; cursor:pointer; color:var(--s);">⊕</label>
+            <input type="file" id="fIn" accept="image/*,video/*" style="display:none;">
+            <button id="shBtn" class="sh-btn">Жариялау</button>
         </div>
     </div>
 
     <div id="feed"></div>
 
     <nav class="nav">
-        <div class="nav-i" onclick="location.reload()">🏠</div>
-        <div class="nav-i" onclick="document.getElementById('postText').focus()">✨</div>
-        <div class="nav-i" onclick="toggleSettings()">⚙️</div>
+        <svg onclick="location.reload()" class="nav-i active" width="26" height="26" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <svg onclick="document.getElementById('text').focus()" class="nav-i" width="26" height="26" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <svg onclick="toggleSettings()" class="nav-i" width="26" height="26" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
     </nav>
 </div>
 
-<div id="settings" class="settings-panel">
-    <h2 id="t-settings">Баптаулар</h2>
-    <div class="set-row">
-        <span id="t-lang">Тіл / Language</span>
-        <select id="langSel" onchange="changeLang(this.value)">
-            <option value="kk">Қазақша</option>
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-        </select>
-    </div>
-    <div class="set-row">
-        <span id="t-mode">Түнгі режим</span>
-        <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
-    </div>
-    <div class="set-row" onclick="logout()" style="color:var(--p); font-weight:bold;">
-        <span id="t-logout">Аккаунттан шығу</span>
-        <span>➡️</span>
-    </div>
-    <button onclick="toggleSettings()" style="width:100%; background:var(--card); color:var(--txt); border:none; padding:12px; border-radius:15px; margin-top:20px;">Жабу</button>
-</div>
-
 <script type="module">
+// [Firebase импорттары мен Config] - өзгеріссіз қалады
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { trackUserIP } from './ipscript.js';
 
-const firebaseConfig = {
+const config = {
   apiKey: "AIzaSyCFikZSzeiVbulbnjRm5um4rLkJ03wmCQw",
   authDomain: "aura-077.firebaseapp.com",
   projectId: "aura-077",
@@ -119,82 +260,84 @@ const firebaseConfig = {
   appId: "1:465157338528:web:1db123ac3777237ba4e0c5"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(config);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-const CLOUD = "din5wpn5g", PRE = "aura_preset";
+const prov = new GoogleAuthProvider();
 
-const loginBtn=document.getElementById("loginBtn"),welcome=document.getElementById("welcome"),uName=document.getElementById("uName"),uPic=document.getElementById("uPic"),upload=document.getElementById("upload"),postText=document.getElementById("postText"),fileInput=document.getElementById("fileInput"),shareBtn=document.getElementById("shareBtn"),preview=document.getElementById("preview"),feed=document.getElementById("feed"),category=document.getElementById("category");
+// [Логика: Вибрация қосылды, Эмодзи тексеру алынып тасталды]
+const logB=document.getElementById("loginBtn"),wel=document.getElementById("welcome"),uH=document.getElementById("uHead"),uP=document.getElementById("uPic"),upd=document.getElementById("upload"),txt=document.getElementById("text"),fIn=document.getElementById("fIn"),shB=document.getElementById("shBtn"),pre=document.getElementById("prev"),fee=document.getElementById("feed"),cat=document.getElementById("cat");
 
-loginBtn.onclick = () => signInWithPopup(auth, provider);
+loginBtn.onclick = () => {
+    if(navigator.vibrate) navigator.vibrate(20); // КӨРІНБЕЙТІН ӘСЕР (Haptic feedback)
+    signInWithPopup(auth, prov);
+};
 
 onAuthStateChanged(auth, user => {
   if(user){
-    welcome.style.display = "none";
-    uName.textContent = user.displayName;
-    uPic.src = user.photoURL;
-    upload.style.display = "block";
+    wel.style.opacity = "0"; setTimeout(()=>wel.style.display="none", 500);
+    uH.style.display = "flex"; uP.src = user.photoURL;
+    upd.style.display = "block";
     trackUserIP(db, collection, addDoc, serverTimestamp, user);
     loadFeed(user);
   } else {
-    welcome.style.display = "flex";
-    upload.style.display = "none";
+    wel.style.display = "flex"; wel.style.opacity = "1";
+    upd.style.display = "none";
   }
 });
 
-fileInput.onchange = e => {
-  preview.innerHTML = "";
+// [Файл тексеру мен жүктеу логикасы - өзгеріссіз]
+fIn.onchange = e => {
+  pre.innerHTML = "";
   const f = e.target.files[0];
   if(!f) return;
+  const url = URL.createObjectURL(f);
   if(f.type.startsWith("video")){
     const v = document.createElement('video');
-    v.src = URL.createObjectURL(f);
+    v.src = url;
     v.onloadedmetadata = () => {
-        if(v.duration > 35) { alert("Max 35s!"); fileInput.value=""; return; }
-        preview.innerHTML = `<video src="${v.src}" muted style="width:80px; border-radius:10px;"></video>`;
+        if(v.duration > 35) { alert("Max 35s!"); fIn.value=""; return; }
+        pre.innerHTML = `<video src="${url}" muted style="width:80px;border-radius:15px;"></video>`;
     };
-  } else {
-    preview.innerHTML = `<img src="${URL.createObjectURL(f)}">`;
-  }
+  } else { pre.innerHTML = `<img src="${url}" style="width:80px;border-radius:15px;">`; }
 };
 
 shareBtn.onclick = async () => {
-  if(!category.value || (!postText.value.trim() && !fileInput.files[0])) return;
-  shareBtn.disabled = true; shareBtn.innerText = "...";
-  let url = "", type = "text";
+  if(!cat.value || !txt.value.trim()) return alert("Категория немесе мәтін бос!");
+  shareBtn.disabled = true; shareBtn.innerText = "⏳";
+  let mUrl = "", mType = "text";
   try {
-    if(fileInput.files[0]){
+    if(fIn.files[0]){
       const fd = new FormData();
-      fd.append("file", fileInput.files[0]);
-      fd.append("upload_preset", PRE);
-      const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/upload`, {method:"POST", body:fd});
+      fd.append("file", fIn.files[0]);
+      fd.append("upload_preset", "aura_preset");
+      const r = await fetch(`https://api.cloudinary.com/v1_1/din5wpn5g/upload`, {method:"POST", body:fd});
       const d = await r.json();
-      url = d.secure_url;
-      type = fileInput.files[0].type.split('/')[0];
+      mUrl = d.secure_url;
+      mType = fIn.files[0].type.split('/')[0];
     }
     await addDoc(collection(db, "posts"), {
       uid: auth.currentUser.uid,
       name: auth.currentUser.displayName,
       pic: auth.currentUser.photoURL,
-      cat: category.value,
-      text: postText.value.trim(),
-      media: url,
-      type: type,
+      cat: cat.value,
+      text: txt.value.trim(),
+      media: mUrl,
+      type: mType,
       time: serverTimestamp()
     });
-    postText.value = ""; fileInput.value = ""; preview.innerHTML = "";
-  } catch(e) {}
-  finally { shareBtn.disabled = false; shareBtn.innerText = "Жариялау"; }
+    txt.value = ""; fIn.value = ""; pre.innerHTML = "";
+  } catch(e) {} finally { shB.disabled = false; shB.innerText = "Жариялау"; }
 };
 
+// [Дизайн: Посттың ішіндегі категория мен профильді жаңарту]
 function loadFeed(user) {
   const q = query(collection(db, "posts"), orderBy("time", "desc"));
   onSnapshot(q, snap => {
-    feed.innerHTML = "";
+    fee.innerHTML = "";
     snap.forEach(d => {
       const p = d.data();
-      const me = user && p.uid === user.uid;
+      const isMe = user && p.uid === user.uid;
       let m = "";
       if(p.media){
         if(p.type==="image") m=`<div class="p-media"><img src="${p.media}" loading="lazy"></div>`;
@@ -203,15 +346,15 @@ function loadFeed(user) {
       const el = document.createElement("div");
       el.className = "post";
       el.innerHTML = `
-        <div class="p-user">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
           <img class="avatar" src="${p.pic}">
           <div>
-            <div style="font-weight:800; font-size:14px;">${p.name}</div>
-            <span class="p-cat">${p.cat}</span>
+            <div style="font-weight:700; font-size:15px;">${p.name}</div>
+            <span style="font-size:10px; font-weight:800; color:var(--s); text-transform:uppercase; letter-spacing:1px; border:1px solid var(--border); padding:2px 8px; border-radius:10px; display:inline-block;">${p.cat}</span>
           </div>
-          ${me ? `<span style="margin-left:auto; opacity:0.3;" onclick="deleteDoc(doc(db,'posts','${d.id}'))">🗑️</span>` : ""}
+          ${isMe ? `<span style="margin-left:auto; opacity:0.2" onclick="deleteDoc(doc(db,'posts','${d.id}'))">🗑️</span>` : ""}
         </div>
-        <div style="font-size:16px;">${p.text}</div>
+        <div style="font-size:16px; line-height:1.5;">${p.text}</div>
         ${m}
       `;
       feed.appendChild(el);
@@ -219,21 +362,8 @@ function loadFeed(user) {
   });
 }
 
-window.toggleSettings = () => document.getElementById("settings").classList.toggle("open");
-window.toggleMode = () => document.body.classList.toggle("light");
-window.logout = () => signOut(auth);
-
-const langData = {
-    kk: {welcome:"Мотивацияға толы сайтқа қош келдіңіз!", login:"Ең алдымен жүйеге кіру", set:"Баптаулар", mode:"Түнгі режим", out:"Шығу"},
-    en: {welcome:"Welcome to the land of Motivation!", login:"Please login first", set:"Settings", mode:"Dark Mode", out:"Logout"},
-    ru: {welcome:"Добро пожаловать в мир мотивации!", login:"Сначала войдите в систему", set:"Настройки", mode:"Ночной режим", out:"Выйти"}
-};
-window.changeLang = (l) => {
-    document.getElementById("t-welcome").textContent = langData[l].welcome;
-    document.getElementById("t-login-hint").textContent = langData[l].login;
-    document.getElementById("t-settings").textContent = langData[l].set;
-    document.getElementById("t-mode").textContent = langData[l].mode;
-    document.getElementById("t-logout").textContent = langData[l].out;
+window.toggleSettings = () => {
+    if(confirm("Шығу?")) signOut(auth);
 };
 </script>
 </body>
